@@ -1,0 +1,77 @@
+import axios from "axios"
+import { useEffect, useState } from 'react'
+import { ProductCard } from '../components/ProductCard'
+import { PaginationList } from '../components/PaginationList'
+import { apiPublicGetProducts } from '../apis/product'
+import type {
+  ProductData,
+  TPagination,
+  InstallationType
+} from "../types/product"
+import type { ApiErrorResponse } from '../types/ApiErrorResponse'
+import { handleResponse } from '../utils/responseMessage'
+
+export const Products = () => {
+  const [products, setProducts] = useState<ProductData[]>([])
+  const [pagination, setPagination] = useState<TPagination>({
+    total_pages: 1,
+    current_page: 1,
+    has_pre: false,
+    has_next: false,
+    category: ''
+  })
+
+  const getProducts = async (page: number = pagination.current_page, category: string = '') => {
+    try {
+      const response = await apiPublicGetProducts({
+        page, category
+      })
+      console.log(response.data)
+      setProducts(response.data.products)
+      setPagination(response.data.pagination)
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        handleResponse(
+          error.response?.data.message ?? '無法取得產品資料，請稍後再試',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
+    }
+  }
+
+  const onChangePage = (page: number) => {
+    setPagination(prev => ({
+      ...prev,
+      current_page: page,
+    }))
+    getProducts(page)
+  }
+
+  useEffect(() => {
+    getProducts()
+  }, [])
+  return (
+    <>
+      <p className="text-center fs-3">商品列表</p>
+      <div className="row my-3">
+        {
+          products.map(product => {
+            return (
+              <div className="col-4" key={product.id}>
+                <ProductCard product={product} />
+              </div>
+            )
+          })
+        }
+      </div>
+      <div className="d-flex justify-content-center">
+        <PaginationList
+          pagination={pagination}
+          onChangePage={onChangePage}
+        />
+      </div>
+    </>
+  )
+}
