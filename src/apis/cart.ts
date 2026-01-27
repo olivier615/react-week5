@@ -1,6 +1,6 @@
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-import type { GetCartResponse } from '../types/cart'
+import type { AddToCartResponse } from '../types/cart'
 const API_BASE = import.meta.env.VITE_API_BASE
 const API_PATH = import.meta.env.VITE_API_PATH
 
@@ -17,6 +17,6 @@ cartApi.interceptors.response.use(
   },
 )
 
-export const apiPublicAddCartItem = (params: { product_id: string, qty: number }): Promise<AxiosResponse<GetCartResponse>> => cartApi.post(`/api/${API_PATH}/cart`, {
+export const apiPublicAddCartItem = (params: { product_id: string, qty: number }): Promise<AxiosResponse<AddToCartResponse>> => cartApi.post(`/api/${API_PATH}/cart`, {
     data: params
 })
