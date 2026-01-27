@@ -26,7 +26,6 @@ export const Products = () => {
       const response = await apiPublicGetProducts({
         page, category
       })
-      console.log(response.data)
       setProducts(response.data.products)
       setPagination(response.data.pagination)
     } catch (error: unknown) {
@@ -52,6 +51,7 @@ export const Products = () => {
   useEffect(() => {
     getProducts()
   }, [])
+  
   return (
     <>
       <p className="text-center fs-3">商品列表</p>
@@ -59,7 +59,7 @@ export const Products = () => {
         {
           products.map(product => {
             return (
-              <div className="col-4" key={product.id}>
+              <div className="col-12 col-sm-6 col-md-4" key={product.id}>
                 <ProductCard product={product} />
               </div>
             )

@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { AxiosResponse } from 'axios'
 import type { 
   GetProductsResponse,
+  GetProductResponse,
   CreateProductResponse,
   CreateProductParams,
   DeleteProductResponse,
@@ -43,4 +44,5 @@ productApi.interceptors.response.use(
 export const apiPublicGetProducts = (params: { page?: number, category?: string }): Promise<AxiosResponse<GetProductsResponse>> => productApi.get(`/api/${API_PATH}/products`, {
   params
 })
-// 好像需要準備客戶用版本
+
+export const apiPublicGetProduct = (id: string): Promise<AxiosResponse<GetProductResponse>> => productApi.get(`/api/${API_PATH}/product/${id}`)

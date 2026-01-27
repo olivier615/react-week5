@@ -62,6 +62,12 @@ export type GetProductsResponse = {
   messages: string[]
 }
 
+export type GetProductResponse = {
+  success: boolean
+  product: ProductData
+  messages: string[]
+}
+
 type MessageResponse = {
   success: boolean
   message: string

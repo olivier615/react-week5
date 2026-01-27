@@ -6,7 +6,7 @@ type ProductCardProps = {
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   return (
-    <div className="card">
+    <div className="card mb-3">
       <img src={product.imageUrl} className="card-img-top" alt={product.title} />
       <div className="card-body">
         <h5 className="card-title">
