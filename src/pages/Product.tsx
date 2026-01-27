@@ -1,13 +1,16 @@
-import { useParams } from "react-router"
+import { useParams, useNavigate } from "react-router"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import type { ProductData } from "../types/product"
 import { apiPublicGetProduct } from "../apis/product"
+import { apiPublicAddCartItem } from "../apis/cart"
 import type { ApiErrorResponse } from "../types/ApiErrorResponse"
-import { handleResponse } from "../utils/responseMessage"
+import { handleResponse, handleToast } from "../utils/responseMessage"
 
 export const Product = () => {
-  const { id } = useParams()
+  const navigate = useNavigate()
+  const { id } = useParams<string>()
+  const [quantity, setQuantity] = useState<number>(1)
   const [product, setProduct] = useState<ProductData>({
     category: "",
     content: "",
@@ -23,6 +26,34 @@ export const Product = () => {
     unit: "",
     installation: "none",
   })
+
+  const addToCart = async () => {
+    if (typeof id !== 'string') return
+    try {
+      console.log(id , quantity)
+      const response = await apiPublicAddCartItem({product_id: id , qty: quantity})
+      handleToast(response.data.message, 'success')
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        console.dir(error)
+        handleResponse(
+          error.response?.data.message ?? '無法加入購物車，請稍後再試',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
+    }
+  }
+
+  const dashQuantity = () => {
+    if (quantity === 1) return
+    setQuantity(quantity - 1)
+  }
+
+  const plusQuantity = () => {
+    setQuantity(quantity + 1)
+  }
 
   const getProduct = async (id: string) => {
     try {
@@ -47,31 +78,71 @@ export const Product = () => {
 
   return (
     <>
-      <div className="mb-3">
+      <button
+        type="button"
+        className="btn btn-outline-primary btn-sm"
+        onClick={() => navigate(-1)}
+      >回上一頁</button>
+      <div className="mt-2 mb-3">
         <div className="row g-3">
           <div className="col-md-5">
-            <img
-              src={product.imageUrl}
-              className="img-fluid rounded"
-              alt={product.title}
-            />
+            {product.imageUrl && (
+              <img
+                src={product.imageUrl}
+                className="img-fluid rounded"
+                alt={product.title}
+              />
+            )}
           </div>
           <div className="col-md-7">
             <div className="">
-              <h5 className="">{product.title}</h5>
+              <p className="mb-1">{product.category}</p>
+              <h5 className="h2">{product.title}</h5>
               <p className="">{product.content}</p>
+            </div>
+            <div className="row g-2">
+              {
+                product.imagesUrl.length > 0 ?
+                  product.imagesUrl.map(url => {
+                    return (
+                      <div className="col-3" key={url}>
+                        <img className="img-fluid rounded" src={url} alt={url} />
+                      </div>
+                    )
+                  })
+                  : ''
+              }
+            </div>
+            <hr />
+            <div className="d-flex flex-column align-items-end">
+              <p>原價：
+                <del className="text-body-secondary">
+                  {product.origin_price}
+                </del>
+              </p>
+              <p>售價：{`${product.price} / ${product.unit}`}</p>
               <p className="">
                 <small className="text-body-secondary">
                   {product.description}
                 </small>
               </p>
-            </div>
-            <hr />
-            <div className="d-flex">
-              <p><del className="text-body-secondary">
-                  {product.origin_price}
-                </del>{product.price}</p>
-              <button className="btn btn-outline-primary">加入購物車</button>
+              <div className="d-flex gap-3">
+                <p className="fs-5 mb-0 align-self-center">購買數量</p>
+                <div className="d-flex justify-content-end fs-3">
+                  <i className={`bi bi-dash-circle-fill ${
+                      quantity === 1 ? 'text-secondary' : 'text-primary'
+                    }`}
+                    onClick={dashQuantity}
+                  ></i>
+                  <p className="mb-0 mx-3">{quantity}</p>
+                  <i className="bi bi-plus-circle-fill text-primary"
+                    onClick={plusQuantity}
+                  ></i>
+                </div>
+                <button className="btn btn-outline-primary"
+                  onClick={addToCart}
+                >加入購物車</button>
+              </div>
             </div>
           </div>
         </div>

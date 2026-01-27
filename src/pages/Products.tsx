@@ -5,8 +5,7 @@ import { PaginationList } from '../components/PaginationList'
 import { apiPublicGetProducts } from '../apis/product'
 import type {
   ProductData,
-  TPagination,
-  InstallationType
+  TPagination
 } from "../types/product"
 import type { ApiErrorResponse } from '../types/ApiErrorResponse'
 import { handleResponse } from '../utils/responseMessage'

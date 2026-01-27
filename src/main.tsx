@@ -5,6 +5,7 @@ const router = createHashRouter(routes)
 
 import 'bootstrap'
 import './assets/all.scss'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 createRoot(document.getElementById('root')!).render(
   <RouterProvider router={router} />
