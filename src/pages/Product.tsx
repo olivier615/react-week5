@@ -6,6 +6,7 @@ import { apiPublicGetProduct } from "../apis/product"
 import { apiPublicAddCartItem } from "../apis/cart"
 import type { ApiErrorResponse } from "../types/ApiErrorResponse"
 import { handleResponse, handleToast } from "../utils/responseMessage"
+import { QuantityControl } from "../components/QuantityControl"
 
 export const Product = () => {
   const navigate = useNavigate()
@@ -30,12 +31,11 @@ export const Product = () => {
   const addToCart = async () => {
     if (typeof id !== 'string') return
     try {
-      console.log(id , quantity)
       const response = await apiPublicAddCartItem({product_id: id , qty: quantity})
       handleToast(response.data.message, 'success')
+      setQuantity(1)
     } catch (error: unknown) {
       if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        console.dir(error)
         handleResponse(
           error.response?.data.message ?? '無法加入購物車，請稍後再試',
           'warning'
@@ -46,19 +46,18 @@ export const Product = () => {
     }
   }
 
-  const dashQuantity = () => {
+  const decreaseQuantity = () => {
     if (quantity === 1) return
     setQuantity(quantity - 1)
   }
 
-  const plusQuantity = () => {
+  const increaseQuantity = () => {
     setQuantity(quantity + 1)
   }
 
   const getProduct = async (id: string) => {
     try {
       const response = await apiPublicGetProduct(id)
-      console.log(response)
       setProduct(response.data.product)
     } catch (error: unknown) {
       if (axios.isAxiosError<ApiErrorResponse>(error)) {
@@ -128,17 +127,11 @@ export const Product = () => {
               </p>
               <div className="d-flex gap-3">
                 <p className="fs-5 mb-0 align-self-center">購買數量</p>
-                <div className="d-flex justify-content-end fs-3">
-                  <i className={`bi bi-dash-circle-fill ${
-                      quantity === 1 ? 'text-secondary' : 'text-primary'
-                    }`}
-                    onClick={dashQuantity}
-                  ></i>
-                  <p className="mb-0 mx-3">{quantity}</p>
-                  <i className="bi bi-plus-circle-fill text-primary"
-                    onClick={plusQuantity}
-                  ></i>
-                </div>
+                <QuantityControl
+                quantity={quantity}
+                onIncrease={increaseQuantity}
+                onDecrease={decreaseQuantity}
+                />
                 <button className="btn btn-outline-primary"
                   onClick={addToCart}
                 >加入購物車</button>

@@ -1,13 +1,28 @@
-import type { ProductData } from './product'
+import type { ProductData } from "./product"
 
-export type Carts = {
-  success: boolean
-  data: Carts
-  message: string
+export type CartData = {
+  carts: CartsItem[]
+  final_total: number
+  total: number
 }
 
-export type Order = {
+export type CartsItem = {
+  coupon: Coupon
+  final_total: number
+  id: string
+  product: ProductData
+  product_id: string
+  qty: number
+  total: number
+}
 
+export type Coupon = {
+  code: string
+  due_date: number
+  id: string
+  is_enabled: number
+  percent: number
+  title: string
 }
 
 export type AddToCartResponse = {
@@ -16,55 +31,22 @@ export type AddToCartResponse = {
   message: string
 }
 
-export type GetCartResponse = {
+export type GetCartDataResponse = {
   success: boolean
-  data: Carts
+  data: CartData
   message: string
 }
 
+export type UpdateCartDataResponse = {
+  success: boolean
+  data: {
+    product_id: string
+    qty: number
+  }
+  message: string
+}
 
-// {
-//   "success": true,
-//   "data": {
-//     "carts": [
-//       {
-//         "coupon": {
-//           "code": "testCode",
-//           "due_date": 6547658,
-//           "id": "-L9uIs5EfPibJpwwTMhN",
-//           "is_enabled": 1,
-//           "percent": 60,
-//           "title": "超級特惠價格"
-//         },
-//         "final_total": 2160,
-//         "id": "-LATwxc_bIJu-AR4AlNj",
-//         "product": {
-//           "category": "衣服3",
-//           "content": "這是內容",
-//           "description": "Sit down please 名設計師設計",
-//           "id": "-L9tH8jxVb2Ka_DYPwng",
-//           "imageUrl": "主圖網址",
-//           "imagesUrl": [
-//             "圖片網址一",
-//             "圖片網址二",
-//             "圖片網址三",
-//             "圖片網址四",
-//             "圖片網址五"
-//           ],
-//           "is_enabled": 1,
-//           "num": 1,
-//           "origin_price": 500,
-//           "price": 600,
-//           "title": "[賣]動物園造型衣服3",
-//           "unit": "個"
-//         },
-//         "product_id": "-L9tH8jxVb2Ka_DYPwng",
-//         "qty": 6,
-//         "total": 3600
-//       }
-//     ],
-//     "total": 3600,
-//     "final_total": 2160
-//   },
-//   "messages": []
-// }
+export type removeCartItemResponse = {
+  success: boolean
+  message: string
+}

@@ -16,7 +16,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       handleToast(response.data.message, 'success')
     } catch (error: unknown) {
       if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        console.dir(error)
         handleResponse(
           error.response?.data.message ?? '無法加入購物車，請稍後再試',
           'warning'
