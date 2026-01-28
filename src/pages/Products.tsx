@@ -9,8 +9,10 @@ import type {
 } from "../types/product"
 import type { ApiErrorResponse } from '../types/ApiErrorResponse'
 import { handleResponse } from '../utils/responseMessage'
+import { BorderSpinner } from '../components/Spinner'
 
 export const Products = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [products, setProducts] = useState<ProductData[]>([])
   const [pagination, setPagination] = useState<TPagination>({
     total_pages: 1,
@@ -27,6 +29,7 @@ export const Products = () => {
       })
       setProducts(response.data.products)
       setPagination(response.data.pagination)
+      setIsLoading(false)
     } catch (error: unknown) {
       if (axios.isAxiosError<ApiErrorResponse>(error)) {
         handleResponse(
@@ -40,6 +43,7 @@ export const Products = () => {
   }
 
   const onChangePage = (page: number) => {
+    setIsLoading(true)
     setPagination(prev => ({
       ...prev,
       current_page: page,
@@ -50,27 +54,35 @@ export const Products = () => {
   useEffect(() => {
     getProducts()
   }, [])
-  
+
   return (
     <>
       <p className="text-center fs-3">商品列表</p>
-      <div className="row my-3">
-        {
-          products.map(product => {
-            return (
-              <div className="col-12 col-sm-6 col-md-4" key={product.id}>
-                <ProductCard product={product} />
-              </div>
-            )
-          })
-        }
-      </div>
-      <div className="d-flex justify-content-center">
-        <PaginationList
-          pagination={pagination}
-          onChangePage={onChangePage}
-        />
-      </div>
+      {
+        isLoading ? (
+          <BorderSpinner />
+        ) : (
+          <>
+            <div className="row my-3">
+              {
+                products.map(product => {
+                  return (
+                    <div className="col-12 col-sm-6 col-md-4" key={product.id}>
+                      <ProductCard product={product} />
+                    </div>
+                  )
+                })
+              }
+            </div>
+            <div className="d-flex justify-content-center">
+              <PaginationList
+                pagination={pagination}
+                onChangePage={onChangePage}
+              />
+            </div>
+          </>
+        )
+      }
     </>
   )
 }

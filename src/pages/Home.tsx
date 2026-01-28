@@ -1,6 +1,7 @@
 export const Home = () => {
   return (
-    <>Home
+    <>
+      <p>這裡是首頁，還沒有東西</p>
     </>
   )
 }

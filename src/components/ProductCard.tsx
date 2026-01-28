@@ -1,16 +1,20 @@
 import axios from "axios"
+import { useState } from 'react'
 import { Link } from 'react-router'
 import type { ProductData } from "../types/product"
 import { apiPublicAddCartItem } from "../apis/cart"
 import type { ApiErrorResponse } from "../types/ApiErrorResponse"
 import { handleResponse, handleToast } from "../utils/responseMessage"
+import { GrowingSpinnerButton } from '../components/Spinner'
 
 type ProductCardProps = {
   product: ProductData
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const [waitingId, setIsWaitingId] = useState<string>('')
   const addToCart = async (id: string, quantity: number) => {
+    setIsWaitingId(id)
     try {
       const response = await apiPublicAddCartItem({ product_id: id, qty: quantity })
       handleToast(response.data.message, 'success')
@@ -23,6 +27,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       } else {
         handleResponse('未知錯誤', 'error')
       }
+    } finally {
+      setIsWaitingId('')
     }
   }
 
@@ -38,8 +44,15 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <div className="d-flex justify-content-end">
           <div className="btn-group">
             <Link to={`/product/${product.id}`} className="btn btn-outline-primary">查看商品細節</Link>
-            <button type="button" className="btn btn-outline-primary"
-              onClick={() => addToCart(product.id, 1)}>加入購物車</button>
+            {
+              waitingId === product.id ? (
+                <GrowingSpinnerButton />
+              ) : (
+                <button type="button" className="btn btn-outline-primary"
+                  onClick={() => addToCart(product.id, 1)}>加入購物車
+                </button>
+              )
+            }
           </div>
         </div>
       </div>
