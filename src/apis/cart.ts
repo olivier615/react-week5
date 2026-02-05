@@ -33,3 +33,5 @@ export const apiPublicUpdateCartItem = (params: { product_id: string, qty: numbe
 })
 
 export const apiPublicRemoveCartItem = (id: string):Promise<AxiosResponse<removeCartItemResponse>> => cartApi.delete(`/api/${API_PATH}/cart/${id}`)
+
+export const apiPublicRemoveAllItem = ():Promise<AxiosResponse<removeCartItemResponse>> => cartApi.delete(`/api/${API_PATH}/carts`)

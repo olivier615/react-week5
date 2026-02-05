@@ -1,18 +1,23 @@
 import axios from "axios"
 import { Link } from "react-router"
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router"
 import type { CartData } from "../types/cart"
 import {
   apiPublicGetCartData,
   apiPublicUpdateCartItem,
-  apiPublicRemoveCartItem
+  apiPublicRemoveCartItem,
+  apiPublicRemoveAllItem
 } from "../apis/cart"
 import type { ApiErrorResponse } from "../types/ApiErrorResponse"
 import { handleResponse, handleToast } from "../utils/responseMessage"
 import { QuantityControl } from "../components/QuantityControl"
 import { BorderSpinner } from '../components/Spinner'
+import { CouponCard } from '../components/CouponCard'
+import { TotalPriceCard } from '../components/TotalPriceCard'
 
 export const Cart = () => {
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [cartData, setCartData] = useState<CartData>({
     carts: [],
@@ -24,6 +29,7 @@ export const Cart = () => {
       const response = await apiPublicGetCartData()
       setCartData(response.data.data)
       setIsLoading(false)
+      console.log(response.data.data)
     } catch (error) {
       if (axios.isAxiosError<ApiErrorResponse>(error)) {
         handleResponse(
@@ -39,6 +45,23 @@ export const Cart = () => {
   const removeItem = async (id: string) => {
     try {
       const response = await apiPublicRemoveCartItem(id)
+      handleToast(response.data.message, 'success')
+      getCartData()
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        handleResponse(
+          error.response?.data.message ?? '無法調整購物車，請稍後再試',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
+    }
+  }
+
+  const removeAllItem = async () => {
+    try {
+      const response = await apiPublicRemoveAllItem()
       handleToast(response.data.message, 'success')
       getCartData()
     } catch (error: unknown) {
@@ -89,7 +112,7 @@ export const Cart = () => {
       <p className="text-center fs-3">
         {cartData.carts.length === 0
           ? '購物車還是空的，快去看看吧 : )'
-          : '購物車列表'
+          : '購物車'
         }
       </p>
       {
@@ -97,58 +120,79 @@ export const Cart = () => {
           <BorderSpinner />
         ) : (
           <>
-            <table className="table align-middle text-center">
-              <thead>
-                <tr>
-                  <th scope="col"></th>
-                  <th scope="col">商品名稱</th>
-                  <th scope="col">分類</th>
-                  <th scope="col">單價</th>
-                  <th scope="col">購買數量</th>
-                  <th scope="col">金額</th>
-                  <th scope="col">移除商品</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartData.carts.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>
-                        <Link to={`/product/${item.product.id}`}>
-                          {item.product.title}
-                        </Link>
-                      </td>
-                      <td>{item.product.category}</td>
-                      <td>{`${item.product.price} / ${item.product.unit}`}</td>
-                      <td>
-                        <QuantityControl
-                          quantity={item.qty}
-                          onIncrease={() => updateItemQty(item.id, item.qty + 1)}
-                          onDecrease={() => updateItemQty(item.id, Math.max(1, item.qty - 1))}
-                        />
-                      </td>
-                      <td>{item.total}</td>
-                      <td>
-                        <i className="bi bi-x-circle fs-5 text-danger"
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => removeItem(item.id)}
-                        ></i>
-                      </td>
+            <div className="row">
+              <div className="col-md-9 col-12">
+                <table className="table align-middle text-center">
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col">商品名稱</th>
+                      <th scope="col">分類</th>
+                      <th scope="col">單價</th>
+                      <th scope="col">購買數量</th>
+                      <th scope="col">金額</th>
+                      <th scope="col">移除商品</th>
                     </tr>
+                  </thead>
+                  <tbody>
+                    {cartData.carts.map((item, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>
+                            <Link to={`/product/${item.product.id}`}>
+                              {item.product.title}
+                            </Link>
+                          </td>
+                          <td>{item.product.category}</td>
+                          <td>{`${item.product.price} / ${item.product.unit}`}</td>
+                          <td>
+                            <QuantityControl
+                              quantity={item.qty}
+                              onIncrease={() => updateItemQty(item.id, item.qty + 1)}
+                              onDecrease={() => updateItemQty(item.id, Math.max(1, item.qty - 1))}
+                            />
+                          </td>
+                          <td>{item.total}</td>
+                          <td>
+                            <i className="bi bi-x-circle fs-5 text-danger"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => removeItem(item.id)}
+                            ></i>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+                {
+                  cartData.carts.length !== 0 && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={removeAllItem}
+                    >
+                      移除所有商品
+                    </button>
                   )
-                })}
-              </tbody>
-            </table>
-            <div className="d-flex flex-column align-items-end">
-              <p className="fs-4 mb-0">總計：{cartData.final_total}</p>
-              <div className="">
-                <button type="button" disabled={cartData.carts.length === 0} className="btn btn-outline-primary mt-3">送出訂單</button>
+                }
+
+              </div>
+              <div className="col-md-3 col-12">
+                <CouponCard />
+                <TotalPriceCard cartData={cartData} />
+                <button
+                type="button"
+                disabled={cartData.carts.length === 0}
+                className="btn btn-outline-primary mt-3 w-100"
+                onClick={() => navigate('/create_order')}
+                >
+                  送出訂單
+                </button>
               </div>
             </div>
           </>
         )
-
       }
     </>
   )
