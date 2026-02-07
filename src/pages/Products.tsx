@@ -57,32 +57,34 @@ export const Products = () => {
 
   return (
     <>
-      <p className="text-center fs-3">商品列表</p>
-      {
-        isLoading ? (
-          <BorderSpinner />
-        ) : (
-          <>
-            <div className="row my-3">
-              {
-                products.map(product => {
-                  return (
-                    <div className="col-12 col-sm-6 col-md-4" key={product.id}>
-                      <ProductCard product={product} />
-                    </div>
-                  )
-                })
-              }
-            </div>
-            <div className="d-flex justify-content-center">
-              <PaginationList
-                pagination={pagination}
-                onChangePage={onChangePage}
-              />
-            </div>
-          </>
-        )
-      }
+      <div className="container">
+        <p className="text-center fs-3">商品列表</p>
+        {
+          isLoading ? (
+            <BorderSpinner />
+          ) : (
+            <>
+              <div className="row my-3">
+                {
+                  products.map(product => {
+                    return (
+                      <div className="col-12 col-sm-6 col-md-4" key={product.id}>
+                        <ProductCard product={product} />
+                      </div>
+                    )
+                  })
+                }
+              </div>
+              <div className="d-flex justify-content-center">
+                <PaginationList
+                  pagination={pagination}
+                  onChangePage={onChangePage}
+                />
+              </div>
+            </>
+          )
+        }
+      </div>
     </>
   )
 }

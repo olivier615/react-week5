@@ -2,10 +2,10 @@ import { NavLink } from "react-router"
 
 export const Header = () => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
       <div className="container">
-        <NavLink className="navbar-brand fw-bold" to="/">
-          CozyVibe
+        <NavLink className="navbar-brand text-dark fw-bold" to="/">
+          CozyLume
         </NavLink>
 
         <button

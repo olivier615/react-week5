@@ -1,0 +1,20 @@
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  color: $light !important;
+}
+
+body {
+  background-color: $light;
+}
+
+body {
+  font-family: 'Poppins', 'Noto Sans TC', sans-serif;
+  background-color: $light;
+  color: #2B2B2B;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

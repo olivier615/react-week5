@@ -2,10 +2,10 @@ import { NavLink } from "react-router"
 
 export const AdminHeader = () => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-info border-bottom">
+    <nav className="navbar navbar-expand-lg navbar-light border-bottom">
       <div className="container">
         <NavLink className="navbar-brand fw-bold" to="/">
-          CozyVibe
+          CozyLume
         </NavLink>
 
         <button
@@ -21,6 +21,8 @@ export const AdminHeader = () => {
             <li className="nav-item">
               <NavLink
                 to="/admin"
+                end
+                // 父路由 NavLink 加 end
                 className={({ isActive }) =>
                   `nav-link ${isActive ? "text-primary" : ""}`
                 }

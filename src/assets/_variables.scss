@@ -298,15 +298,28 @@ $cyans: (
 // fusv-enable
 
 // scss-docs-start theme-color-variables
-$primary:       $blue !default;
-$secondary:     $gray-600 !default;
-$success:       $green !default;
-$info:          $cyan !default;
-$warning:       $yellow !default;
-$danger:        $red !default;
-$light:         $gray-100 !default;
-$dark:          $gray-900 !default;
+
+// $primary:       $blue !default;
+// $secondary:     $gray-600 !default;
+// $success:       $green !default;
+// $info:          $cyan !default;
+// $warning:       $yellow !default;
+// $danger:        $red !default;
+// $light:         $gray-100 !default;
+// $dark:          $gray-900 !default;
+
 // scss-docs-end theme-color-variables
+
+$primary:       #5FB8AD !default;   // 強化後的主色
+$secondary:     #CFE8E5 !default;
+
+$success:       #6DBE9E !default;
+$info:          #7FB7D6 !default;
+$warning:       #F1C27D !default;
+$danger:        #D98989 !default;
+
+$light:         #F8FAF9 !default;   // 背景色保留
+$dark:          #2E3B3A !default;
 
 // scss-docs-start theme-colors-map
 $theme-colors: (

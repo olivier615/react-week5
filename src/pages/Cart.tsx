@@ -109,91 +109,93 @@ export const Cart = () => {
 
   return (
     <>
-      <p className="text-center fs-3">
-        {cartData.carts.length === 0
-          ? '購物車還是空的，快去看看吧 : )'
-          : '購物車'
-        }
-      </p>
-      {
-        isLoading ? (
-          <BorderSpinner />
-        ) : (
-          <>
-            <div className="row">
-              <div className="col-md-9 col-12">
-                <table className="table align-middle text-center">
-                  <thead>
-                    <tr>
-                      <th scope="col"></th>
-                      <th scope="col">商品名稱</th>
-                      <th scope="col">分類</th>
-                      <th scope="col">單價</th>
-                      <th scope="col">購買數量</th>
-                      <th scope="col">金額</th>
-                      <th scope="col">移除商品</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cartData.carts.map((item, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>
-                            <Link to={`/product/${item.product.id}`}>
-                              {item.product.title}
-                            </Link>
-                          </td>
-                          <td>{item.product.category}</td>
-                          <td>{`${item.product.price} / ${item.product.unit}`}</td>
-                          <td>
-                            <QuantityControl
-                              quantity={item.qty}
-                              onIncrease={() => updateItemQty(item.id, item.qty + 1)}
-                              onDecrease={() => updateItemQty(item.id, Math.max(1, item.qty - 1))}
-                            />
-                          </td>
-                          <td>{item.total}</td>
-                          <td>
-                            <i className="bi bi-x-circle fs-5 text-danger"
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => removeItem(item.id)}
-                            ></i>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-                {
-                  cartData.carts.length !== 0 && (
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-secondary"
-                      onClick={removeAllItem}
-                    >
-                      移除所有商品
-                    </button>
-                  )
-                }
+      <div className="container">
+        <p className="text-center fs-3">
+          {cartData.carts.length === 0
+            ? '購物車還是空的，快去看看吧 : )'
+            : '購物車'
+          }
+        </p>
+        {
+          isLoading ? (
+            <BorderSpinner />
+          ) : (
+            <>
+              <div className="row">
+                <div className="col-md-9 col-12">
+                  <table className="table align-middle text-center">
+                    <thead>
+                      <tr>
+                        <th scope="col"></th>
+                        <th scope="col">商品名稱</th>
+                        <th scope="col">分類</th>
+                        <th scope="col">單價</th>
+                        <th scope="col">購買數量</th>
+                        <th scope="col">金額</th>
+                        <th scope="col">移除商品</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cartData.carts.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>
+                              <Link to={`/product/${item.product.id}`}>
+                                {item.product.title}
+                              </Link>
+                            </td>
+                            <td>{item.product.category}</td>
+                            <td>{`${item.product.price} / ${item.product.unit}`}</td>
+                            <td>
+                              <QuantityControl
+                                quantity={item.qty}
+                                onIncrease={() => updateItemQty(item.id, item.qty + 1)}
+                                onDecrease={() => updateItemQty(item.id, Math.max(1, item.qty - 1))}
+                              />
+                            </td>
+                            <td>{item.total}</td>
+                            <td>
+                              <i className="bi bi-x-circle fs-5 text-danger"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => removeItem(item.id)}
+                              ></i>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                  {
+                    cartData.carts.length !== 0 && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={removeAllItem}
+                      >
+                        移除所有商品
+                      </button>
+                    )
+                  }
 
+                </div>
+                <div className="col-md-3 col-12">
+                  <CouponCard />
+                  <TotalPriceCard cartData={cartData} />
+                  <button
+                    type="button"
+                    disabled={cartData.carts.length === 0}
+                    className="btn btn-outline-primary mt-3 w-100"
+                    onClick={() => navigate('/create_order')}
+                  >
+                    送出訂單
+                  </button>
+                </div>
               </div>
-              <div className="col-md-3 col-12">
-                <CouponCard />
-                <TotalPriceCard cartData={cartData} />
-                <button
-                type="button"
-                disabled={cartData.carts.length === 0}
-                className="btn btn-outline-primary mt-3 w-100"
-                onClick={() => navigate('/create_order')}
-                >
-                  送出訂單
-                </button>
-              </div>
-            </div>
-          </>
-        )
-      }
+            </>
+          )
+        }
+      </div>
     </>
   )
 }

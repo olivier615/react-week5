@@ -4,9 +4,7 @@ import { useNavigate } from "react-router"
 import type { UserLogInFormData } from '../types/user'
 import type { ApiErrorResponse } from "../types/ApiErrorResponse"
 import { handleResponse } from "../utils/responseMessage"
-import {
-  apiUserLogin
-} from "../apis/user"
+import { apiUserLogin } from "../apis/user"
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -33,9 +31,10 @@ export const Login = () => {
   }
 
   return (<>
+  <div className="container">
     <div className="row">
       <div className="col-6">
-        <img className="img-fluid w-100 rounded" src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aG9tZXxlbnwwfDB8MHx8fDA%3D" alt="sweet home" />
+        <img className="img-fluid w-100 rounded" src="https://images.unsplash.com/photo-1504805572947-34fad45aed93?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fE5lb24lMjBzaWdufGVufDB8fDB8fHww" alt="sweet home" />
       </div>
       <div className="col-6">
         <form
@@ -90,5 +89,6 @@ export const Login = () => {
         </form>
       </div>
     </div>
+  </div>
   </>)
 }
