@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router"
 import { useNavigate } from "react-router"
 
-import { handleResponse } from "../utils/responseMessage"
-import type { ApiErrorResponse } from "../types/ApiErrorResponse"
+import { useMessage } from "../hooks/useMessage"
 import type { CartData } from "../types/cart"
 import { apiPublicPostOrder } from '../apis/order'
 import { apiPublicGetCartData } from "../apis/cart"
@@ -15,6 +14,7 @@ import { TotalPriceCard } from '../components/TotalPriceCard'
 import type { orderData } from '../types/order'
 
 export const CreateOrder = () => {
+  const { showSuccess, showError } = useMessage()
   const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors } } = useForm<orderData>({ mode: 'onChange' })
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -30,34 +30,25 @@ export const CreateOrder = () => {
       setCartData(response.data.data)
       setIsLoading(false)
     } catch (error) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? "無法取得產品資料，請稍後再試",
-          "warning",
-        )
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法取得產品資料，請稍後再試'
+        showError(message)
       } else {
-        handleResponse("未知錯誤", "error")
+        showError('發生未知錯誤')
       }
     }
   }
   const onSubmit = async (data: orderData) => {
-    console.log(data)
     try {
       const response = await apiPublicPostOrder(data)
-      handleResponse(
-        response?.data.message ?? "訂單已建立!",
-        "success",
-      )
+      showSuccess(response?.data.message ?? "訂單已成立!")
       navigate('/')
     } catch (error) {
-
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '無法完成訂單，請稍後再試',
-          "warning",
-        )
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法完成訂單，請稍後再試'
+        showError(message)
       } else {
-        handleResponse("未知錯誤", "error")
+        showError('發生未知錯誤')
       }
     }
   }

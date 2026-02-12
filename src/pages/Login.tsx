@@ -45,7 +45,6 @@ export const Login = () => {
           <div className="form-floating mb-3">
             <input
               type="email"
-              // name="email"
               className="form-control"
               id="username"
               placeholder="name@example.com"

@@ -13,7 +13,7 @@ import {
   apiEditProduct
 } from "../../apis/product";
 
-import type { ApiErrorResponse } from "../../types/user"
+import { useMessage } from "../../hooks/useMessage"
 
 import { handleResponse } from '../../utils/responseMessage'
 
@@ -50,9 +50,9 @@ type ProductModalProps = {
 }
 
 export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdited }: ProductModalProps) => {
+  const { showSuccess, showError } = useMessage()
   const [imageUrlInput, setImageUrlInput] = useState<string>('')
   const [editProduct, setEditProduct] = useState<CreateProductParams>(initialEditProduct)
-
 
   const handleModalInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = event.target;
@@ -113,17 +113,15 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
     try {
       const response = await apiCreateProduct(editProduct)
       setEditProduct(initialEditProduct)
-      handleResponse(response.data.message, 'success')
+      showSuccess(response.data.message)
       closeModal()
       onEdited()
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '新增產品失敗',
-          'warning'
-        )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '新增產品失敗'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
     }
   }
@@ -142,17 +140,15 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
         id: tempProduct.id,
         data: editProduct
       })
-      handleResponse(response.data.message, 'success')
+      showSuccess(response.data.message)
       closeModal()
       onEdited()
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '編輯產品失敗',
-          'warning'
-        )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '編輯產品失敗'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
     }
   }

@@ -4,9 +4,7 @@ type ImageCardProps = {
   onSetMainImage:  () => void
 }
 
-export const ImageCard = ({url,onDelete, onSetMainImage}: ImageCardProps) => {
-// next to do 設置為主要圖片
-
+export const ImageCard = ({url, onDelete, onSetMainImage}: ImageCardProps) => {
   return (
     <div className="card p-2">
       <img className="img-fluid mb-1"  src={url} alt={url} />

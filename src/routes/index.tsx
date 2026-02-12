@@ -1,6 +1,9 @@
 import Layout from '../layout/Layout';
 import AdminLayout from '../layout/AdminLayout';
-import { Home }  from '../pages/Home'
+
+import ProtectedRoute from '../components/ProtectedRoute'
+
+import { Home } from '../pages/Home'
 import { Products } from '../pages/Products'
 import { Product } from '../pages/Product'
 import { Cart } from '../pages/Cart'
@@ -53,7 +56,11 @@ const routes = [
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,

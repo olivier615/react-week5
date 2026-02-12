@@ -36,7 +36,6 @@ export const ConfirmDeleteModel = ({
       cancelButtonText: '取消',
       reverseButtons: true,
     })
-
     if (!result.isConfirmed) {
       await swalWithBootstrapButtons.fire({
         title: '已取消',
@@ -45,10 +44,8 @@ export const ConfirmDeleteModel = ({
       })
       return
     }
-
     try {
       await deleteProduct(productId)
-
       await swalWithBootstrapButtons.fire({
         title: 'Done!',
         text: '產品已刪除!',

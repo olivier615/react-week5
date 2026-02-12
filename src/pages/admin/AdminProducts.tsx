@@ -1,24 +1,19 @@
 import { useEffect, useState, useRef } from "react"
 import axios from "axios"
 import * as bootstrap from 'bootstrap'
-
-import { apiCheckLoginStatus } from '../../apis/user'
 import { apiGetProducts } from "../../apis/product"
-
-import { handleResponse } from "../../utils/responseMessage"
-
 import { ProductModal } from '../../components/admin/ProductModal'
 import { ConfirmDeleteModel } from '../../components/admin/ConfirmDeleteModel'
 import { PaginationList } from '../../components/PaginationList'
-
 import type {
   ProductData,
   TPagination,
   InstallationType
 } from "../../types/product"
-import type { ApiErrorResponse } from "../../types/ApiErrorResponse"
+import { useMessage } from "../../hooks/useMessage"
 
 export const AdminProducts = () => {
+  const { showSuccess, showError } = useMessage()
   const productModalRef = useRef<bootstrap.Modal | null>(null)
   const [products, setProducts] = useState<ProductData[]>([])
   const [productEditState, setProductEditState] = useState<'new' | 'edit'>('new')
@@ -35,33 +30,13 @@ export const AdminProducts = () => {
       const response = await apiGetProducts({ page, category })
       setProducts(response.data.products)
       setPagination(response.data.pagination)
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '無法取得產品資料，請稍後再試',
-          'warning'
-        )
+      showSuccess('取得資料成功')
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '取得資料失敗'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
-      }
-    }
-  }
-
-  const checkLoginStatus = async () => {
-    try {
-      const response = await apiCheckLoginStatus()
-      if (!response.data.success) {
-      } else {
-        getProducts()
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '出了點問題，等等再試試看!',
-          'warning'
-        )
-      } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
     }
   }
@@ -97,7 +72,8 @@ export const AdminProducts = () => {
       "$1"
     )
     axios.defaults.headers.common.Authorization = token;
-    checkLoginStatus()
+    // checkLoginStatus()
+    getProducts()
     const el = document.getElementById('productModal')
     if (!el) return
     productModalRef.current = new bootstrap.Modal('#productModal', {
@@ -116,76 +92,77 @@ export const AdminProducts = () => {
       productModalRef.current = null
     }
   }, [])
-  return (<div className="container">
-    <div className="row mt-5">
-      <div className="col-md-12">
-        <h2>產品列表</h2>
-        <div className="text-end">
-          <button onClick={() => openProductModal('new', null)} type="button" className="btn btn-primary ">新增產品</button>
-        </div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>產品名稱</th>
-              <th>分類</th>
-              <th>原價</th>
-              <th>售價</th>
-              <th>到府安裝</th>
-              <th>是否啟用</th>
-              <th>編輯</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products && products.length > 0 ? (
-              products.map((product) => (
-                <tr key={product.id}>
-                  <td>{product.title}</td>
-                  <td>{product.category}</td>
-                  <td>{product.origin_price}</td>
-                  <td>{product.price}</td>
-                  <td className={`${product.installation ? '' : 'text-danger'}`}>
-                    {product.installation
-                      ? installationLabelMap[product.installation]
-                      : '未啟用'}
-                  </td>
-                  <td className={`${product.is_enabled ? '' : 'text-danger'}`}>
-                    {product.is_enabled ? "啟用" : "未啟用"}
-                  </td>
-                  <td>
-                    <div className="btn-group">
-                      <button
-                        type="button" className="btn btn-outline-primary btn-sm"
-                        onClick={() => openProductModal('edit', product)}
-                      >
-                        編輯
-                      </button>
-                      <ConfirmDeleteModel
-                        productId={product.id}
-                        productTitle={product.title}
-                        onDeleted={getProducts}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
+  return (
+    <div className="container">
+      <div className="row mt-5">
+        <div className="col-md-12">
+          <h2>產品列表</h2>
+          <div className="text-end">
+            <button onClick={() => openProductModal('new', null)} type="button" className="btn btn-primary ">新增產品</button>
+          </div>
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={5}>尚無產品資料</td>
+                <th>產品名稱</th>
+                <th>分類</th>
+                <th>原價</th>
+                <th>售價</th>
+                <th>到府安裝</th>
+                <th>是否啟用</th>
+                <th>編輯</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products && products.length > 0 ? (
+                products.map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.title}</td>
+                    <td>{product.category}</td>
+                    <td>{product.origin_price}</td>
+                    <td>{product.price}</td>
+                    <td className={`${product.installation ? '' : 'text-danger'}`}>
+                      {product.installation
+                        ? installationLabelMap[product.installation]
+                        : '未啟用'}
+                    </td>
+                    <td className={`${product.is_enabled ? '' : 'text-danger'}`}>
+                      {product.is_enabled ? "啟用" : "未啟用"}
+                    </td>
+                    <td>
+                      <div className="btn-group">
+                        <button
+                          type="button" className="btn btn-outline-primary btn-sm"
+                          onClick={() => openProductModal('edit', product)}
+                        >
+                          編輯
+                        </button>
+                        <ConfirmDeleteModel
+                          productId={product.id}
+                          productTitle={product.title}
+                          onDeleted={getProducts}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5}>尚無產品資料</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-    <PaginationList
-      pagination={pagination}
-      onChangePage={onChangePage}
-    />
-    <ProductModal
+      <PaginationList
+        pagination={pagination}
+        onChangePage={onChangePage}
+      />
+      <ProductModal
         closeModal={closeModal}
         productEditState={productEditState}
         tempProduct={tempProduct}
         onEdited={getProducts}
       />
-  </div>)
+    </div>)
 }

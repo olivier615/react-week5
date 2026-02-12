@@ -4,13 +4,15 @@ import axios from "axios"
 import type { ProductData } from "../types/product"
 import { apiPublicGetProduct } from "../apis/product"
 import { apiPublicAddCartItem } from "../apis/cart"
-import type { ApiErrorResponse } from "../types/ApiErrorResponse"
-import { handleResponse, handleToast } from "../utils/responseMessage"
 import { QuantityControl } from "../components/QuantityControl"
+import { useMessage } from "../hooks/useMessage"
+import { GrowingSpinnerButton } from '../components/Spinner'
 
 export const Product = () => {
   const navigate = useNavigate()
+  const { showSuccess, showError } = useMessage()
   const { id } = useParams<string>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [quantity, setQuantity] = useState<number>(1)
   const [product, setProduct] = useState<ProductData>({
     category: "",
@@ -30,19 +32,20 @@ export const Product = () => {
 
   const addToCart = async () => {
     if (typeof id !== 'string') return
+    setIsLoading(true)
     try {
       const response = await apiPublicAddCartItem({ product_id: id, qty: quantity })
-      handleToast(response.data.message, 'success')
+      showSuccess(response.data.message)
       setQuantity(1)
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '無法加入購物車，請稍後再試',
-          'warning'
-        )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法加入購物車，請稍後再試'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -59,14 +62,12 @@ export const Product = () => {
     try {
       const response = await apiPublicGetProduct(id)
       setProduct(response.data.product)
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? "無法取得產品資料，請稍後再試",
-          "warning",
-        )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法取得產品資料，請稍後再試'
+        showError(message)
       } else {
-        handleResponse("未知錯誤", "error")
+        showError('發生未知錯誤')
       }
     }
   }
@@ -133,9 +134,14 @@ export const Product = () => {
                     onIncrease={increaseQuantity}
                     onDecrease={decreaseQuantity}
                   />
-                  <button className="btn btn-outline-primary"
-                    onClick={addToCart}
-                  >加入購物車</button>
+                  {
+                    isLoading ? 
+                    (<GrowingSpinnerButton />)
+                    :
+                    <button className="btn btn-outline-primary"
+                      onClick={addToCart}
+                    >加入購物車</button>
+                  }
                 </div>
               </div>
             </div>

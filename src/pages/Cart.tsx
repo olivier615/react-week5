@@ -9,14 +9,14 @@ import {
   apiPublicRemoveCartItem,
   apiPublicRemoveAllItem
 } from "../apis/cart"
-import type { ApiErrorResponse } from "../types/ApiErrorResponse"
-import { handleResponse, handleToast } from "../utils/responseMessage"
 import { QuantityControl } from "../components/QuantityControl"
 import { BorderSpinner } from '../components/Spinner'
 import { CouponCard } from '../components/CouponCard'
 import { TotalPriceCard } from '../components/TotalPriceCard'
+import { useMessage } from "../hooks/useMessage"
 
 export const Cart = () => {
+  const { showSuccess, showError } = useMessage()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [cartData, setCartData] = useState<CartData>({
@@ -29,15 +29,12 @@ export const Cart = () => {
       const response = await apiPublicGetCartData()
       setCartData(response.data.data)
       setIsLoading(false)
-      console.log(response.data.data)
     } catch (error) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? "無法取得產品資料，請稍後再試",
-          "warning",
-        )
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法取得產品資料，請稍後再試'
+        showError(message)
       } else {
-        handleResponse("未知錯誤", "error")
+        showError('發生未知錯誤')
       }
     }
   }
@@ -45,16 +42,14 @@ export const Cart = () => {
   const removeItem = async (id: string) => {
     try {
       const response = await apiPublicRemoveCartItem(id)
-      handleToast(response.data.message, 'success')
+      showSuccess(response.data.message)
       getCartData()
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '無法調整購物車，請稍後再試',
-          'warning'
-        )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法調整購物車，請稍後再試'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
     }
   }
@@ -62,16 +57,14 @@ export const Cart = () => {
   const removeAllItem = async () => {
     try {
       const response = await apiPublicRemoveAllItem()
-      handleToast(response.data.message, 'success')
+      showSuccess(response.data.message)
       getCartData()
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '無法調整購物車，請稍後再試',
-          'warning'
-        )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法調整購物車，請稍後再試'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
     }
   }
@@ -91,14 +84,12 @@ export const Cart = () => {
         product_id: cartItemId,
         qty: nextQty
       })
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '無法調整購物車，請稍後再試',
-          'warning'
-        )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法調整購物車，請稍後再試'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
     }
   }

@@ -3,29 +3,27 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import type { ProductData } from "../types/product"
 import { apiPublicAddCartItem } from "../apis/cart"
-import type { ApiErrorResponse } from "../types/ApiErrorResponse"
-import { handleResponse, handleToast } from "../utils/responseMessage"
 import { GrowingSpinnerButton } from '../components/Spinner'
+import { useMessage } from "../hooks/useMessage"
 
 type ProductCardProps = {
   product: ProductData
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const { showSuccess, showError } = useMessage()
   const [waitingId, setIsWaitingId] = useState<string>('')
   const addToCart = async (id: string, quantity: number) => {
     setIsWaitingId(id)
     try {
       const response = await apiPublicAddCartItem({ product_id: id, qty: quantity })
-      handleToast(response.data.message, 'success')
-    } catch (error: unknown) {
-      if (axios.isAxiosError<ApiErrorResponse>(error)) {
-        handleResponse(
-          error.response?.data.message ?? '無法加入購物車，請稍後再試',
-          'warning'
-        )
+      showSuccess(response.data.message)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '無法加入購物車，請稍後再試'
+        showError(message)
       } else {
-        handleResponse('未知錯誤', 'error')
+        showError('發生未知錯誤')
       }
     } finally {
       setIsWaitingId('')
