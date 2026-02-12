@@ -5,6 +5,8 @@ import type { ProductData } from "../types/product"
 import { apiPublicAddCartItem } from "../apis/cart"
 import { GrowingSpinnerButton } from '../components/Spinner'
 import { useMessage } from "../hooks/useMessage"
+import { getAsyncCarts } from '../slices/cartSlice'
+import { useAppDispatch } from '../store/hooks'
 
 type ProductCardProps = {
   product: ProductData
@@ -13,10 +15,13 @@ type ProductCardProps = {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { showSuccess, showError } = useMessage()
   const [waitingId, setIsWaitingId] = useState<string>('')
+  const dispatch = useAppDispatch()
+
   const addToCart = async (id: string, quantity: number) => {
     setIsWaitingId(id)
     try {
       const response = await apiPublicAddCartItem({ product_id: id, qty: quantity })
+      dispatch(getAsyncCarts())
       showSuccess(response.data.message)
     } catch (error) {
       if (axios.isAxiosError(error)) {

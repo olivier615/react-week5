@@ -7,9 +7,12 @@ import { apiPublicAddCartItem } from "../apis/cart"
 import { QuantityControl } from "../components/QuantityControl"
 import { useMessage } from "../hooks/useMessage"
 import { GrowingSpinnerButton } from '../components/Spinner'
+import { getAsyncCarts } from '../slices/cartSlice'
+import { useAppDispatch } from '../store/hooks'
 
 export const Product = () => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const { showSuccess, showError } = useMessage()
   const { id } = useParams<string>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -35,6 +38,7 @@ export const Product = () => {
     setIsLoading(true)
     try {
       const response = await apiPublicAddCartItem({ product_id: id, qty: quantity })
+      dispatch(getAsyncCarts())
       showSuccess(response.data.message)
       setQuantity(1)
     } catch (error) {

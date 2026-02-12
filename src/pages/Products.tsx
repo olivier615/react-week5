@@ -11,6 +11,7 @@ import type { ApiErrorResponse } from '../types/ApiErrorResponse'
 import { handleResponse } from '../utils/responseMessage'
 import { BorderSpinner } from '../components/Spinner'
 
+
 export const Products = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [products, setProducts] = useState<ProductData[]>([])

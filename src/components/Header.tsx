@@ -1,6 +1,18 @@
 import { NavLink } from "react-router"
+import { useEffect } from 'react'
+import { getAsyncCarts } from '../slices/cartSlice'
+import { useAppDispatch } from '../store/hooks'
+import { selectCartQty } from '../slices/cartSlice'
+import { useSelector } from 'react-redux'
+
 
 export const Header = () => {
+  const cartQty = useSelector(selectCartQty)
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    dispatch(getAsyncCarts())
+  }, [])
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
       <div className="container">
@@ -22,7 +34,7 @@ export const Header = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "text-primary" : ""}`
+                  `nav-link ${isActive ? "text-primary" : ""} text-center`
                 }
               >
                 首頁
@@ -32,7 +44,7 @@ export const Header = () => {
               <NavLink
                 to="/products"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "text-primary" : ""}`
+                  `nav-link ${isActive ? "text-primary" : ""} text-center`
                 }
               >
                 查看商品
@@ -42,10 +54,19 @@ export const Header = () => {
               <NavLink
                 to="/cart"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "text-primary" : ""}`
+                  `nav-link position-relative ${isActive ? "text-primary" : ""} text-center`
                 }
               >
-                購物車
+                <i className="bi bi-cart fs-5"></i>
+
+                {cartQty > 0 && (
+                  <span
+                    className="position-absolute translate-middle badge rounded-pill bg-danger"
+                    style={{ fontSize: '0.65rem' }}
+                  >
+                    {cartQty}
+                  </span>
+                )}
               </NavLink>
             </li>
           </ul>

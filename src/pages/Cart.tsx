@@ -1,10 +1,12 @@
 import axios from "axios"
 import { Link } from "react-router"
 import { useState, useEffect } from "react"
+import { useSelector } from 'react-redux'
+import { selectCart } from '../slices/cartSlice'
 import { useNavigate } from "react-router"
 import type { CartData } from "../types/cart"
 import {
-  apiPublicGetCartData,
+  // apiPublicGetCartData,
   apiPublicUpdateCartItem,
   apiPublicRemoveCartItem,
   apiPublicRemoveAllItem
@@ -14,36 +16,42 @@ import { BorderSpinner } from '../components/Spinner'
 import { CouponCard } from '../components/CouponCard'
 import { TotalPriceCard } from '../components/TotalPriceCard'
 import { useMessage } from "../hooks/useMessage"
+import { getAsyncCarts } from '../slices/cartSlice'
+import { useAppDispatch } from '../store/hooks'
 
 export const Cart = () => {
+  const dispatch = useAppDispatch()
+  const cart = useSelector(selectCart)
+  console.log(cart)
   const { showSuccess, showError } = useMessage()
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [cartData, setCartData] = useState<CartData>({
     carts: [],
     final_total: 0,
     total: 0,
   })
-  const getCartData = async () => {
-    try {
-      const response = await apiPublicGetCartData()
-      setCartData(response.data.data)
-      setIsLoading(false)
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.message || '無法取得產品資料，請稍後再試'
-        showError(message)
-      } else {
-        showError('發生未知錯誤')
-      }
-    }
-  }
+
+  // const getCartData = async () => {
+  //   try {
+  //     const response = await apiPublicGetCartData()
+  //     setCartData(response.data.data)
+  //     setIsLoading(false)
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error)) {
+  //       const message = error.response?.data?.message || '無法取得產品資料，請稍後再試'
+  //       showError(message)
+  //     } else {
+  //       showError('發生未知錯誤')
+  //     }
+  //   }
+  // }
 
   const removeItem = async (id: string) => {
     try {
       const response = await apiPublicRemoveCartItem(id)
+      dispatch(getAsyncCarts())
       showSuccess(response.data.message)
-      getCartData()
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || '無法調整購物車，請稍後再試'
@@ -58,7 +66,7 @@ export const Cart = () => {
     try {
       const response = await apiPublicRemoveAllItem()
       showSuccess(response.data.message)
-      getCartData()
+      dispatch(getAsyncCarts())
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || '無法調整購物車，請稍後再試'
@@ -84,6 +92,7 @@ export const Cart = () => {
         product_id: cartItemId,
         qty: nextQty
       })
+      dispatch(getAsyncCarts())
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || '無法調整購物車，請稍後再試'
@@ -95,8 +104,10 @@ export const Cart = () => {
   }
 
   useEffect(() => {
-    getCartData()
-  }, [])
+    setCartData({
+      ...cart
+    })
+  }, [cart])
 
   return (
     <>
