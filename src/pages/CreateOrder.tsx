@@ -194,7 +194,7 @@ export const CreateOrder = () => {
         </div>
         <div className="col-3">
           <CouponCard />
-          <TotalPriceCard cartData={cartData} />
+          <TotalPriceCard />
         </div>
       </div>
     </div>

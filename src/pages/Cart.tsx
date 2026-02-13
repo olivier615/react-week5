@@ -22,30 +22,15 @@ import { useAppDispatch } from '../store/hooks'
 export const Cart = () => {
   const dispatch = useAppDispatch()
   const cart = useSelector(selectCart)
-  console.log(cart)
   const { showSuccess, showError } = useMessage()
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, _] = useState<boolean>(false)
+  const [waiting, setWaiting] = useState<boolean>(false)
   const [cartData, setCartData] = useState<CartData>({
     carts: [],
     final_total: 0,
     total: 0,
   })
-
-  // const getCartData = async () => {
-  //   try {
-  //     const response = await apiPublicGetCartData()
-  //     setCartData(response.data.data)
-  //     setIsLoading(false)
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error)) {
-  //       const message = error.response?.data?.message || '無法取得產品資料，請稍後再試'
-  //       showError(message)
-  //     } else {
-  //       showError('發生未知錯誤')
-  //     }
-  //   }
-  // }
 
   const removeItem = async (id: string) => {
     try {
@@ -78,15 +63,7 @@ export const Cart = () => {
   }
 
   const updateItemQty = async (cartItemId: string, nextQty: number) => {
-    setCartData(prev => {
-      const carts = prev.carts.map(item =>
-        item.id === cartItemId
-          ? { ...item, qty: nextQty, total: nextQty * item.product.price }
-          : item
-      )
-      const total = carts.reduce((sum, c) => sum + c.total, 0)
-      return { ...prev, carts, total, final_total: total }
-    })
+    setWaiting(true)
     try {
       await apiPublicUpdateCartItem({
         product_id: cartItemId,
@@ -100,6 +77,8 @@ export const Cart = () => {
       } else {
         showError('發生未知錯誤')
       }
+    } finally {
+      setWaiting(false)
     }
   }
 
@@ -151,6 +130,7 @@ export const Cart = () => {
                             <td>{`${item.product.price} / ${item.product.unit}`}</td>
                             <td>
                               <QuantityControl
+                                waiting={waiting}
                                 quantity={item.qty}
                                 onIncrease={() => updateItemQty(item.id, item.qty + 1)}
                                 onDecrease={() => updateItemQty(item.id, Math.max(1, item.qty - 1))}
@@ -183,7 +163,7 @@ export const Cart = () => {
                 </div>
                 <div className="col-md-3 col-12">
                   <CouponCard />
-                  <TotalPriceCard cartData={cartData} />
+                  <TotalPriceCard />
                   <button
                     type="button"
                     disabled={cartData.carts.length === 0}

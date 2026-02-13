@@ -2,7 +2,8 @@
   background-image: url('https://images.unsplash.com/photo-1614447912314-e2976f03f61a?q=80&w=1470&auto=format&fit=crop');
   background-size: cover;
   background-position: center;
-  padding: 140px 16px 60px 16px;   /* 手機 */
+  padding: 140px 16px 60px 16px;
+  /* 手機 */
   border-radius: 20px;
 }
 
@@ -44,7 +45,12 @@
 .bg_img_fill {
   background-size: cover;
   background-position: center;
-  padding: 200px 0;
+  padding: 300px 0;
+}
+
+.mb-300 {
+  margin-top: 60px;
+  margin-bottom: 300px;
 }
 
 .sec_2_img_1 {
@@ -63,3 +69,29 @@
   background-image: url('https://images.unsplash.com/photo-1615591990516-8af7566795a7?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
 }
 
+.sec_2_1 {
+  background-color: #000000;
+  background-size: cover;
+  background-position: center;
+
+  /* 讓圖片變黑白，但不會影響子元素標籤 */
+  background-blend-mode: luminosity;
+
+  /* 補強：用透明黑色的線性漸層來達到亮度 0.8 的效果 */
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.9)),
+    url('https://images.unsplash.com/photo-1730724620660-f50b1b527dad?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+}
+
+.sec_2_2 {
+  background-color: #000000;
+  background-size: cover;
+  background-position: center;
+
+  background-blend-mode: luminosity;
+
+  background-image:
+    // linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.9)),
+    url('https://images.unsplash.com/photo-1641734609301-049ac78ad47d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    // url('https://images.unsplash.com/photo-1675972486643-18758f47bbf6?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+}

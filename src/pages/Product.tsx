@@ -134,6 +134,7 @@ export const Product = () => {
                 <div className="d-flex gap-3">
                   <p className="fs-5 mb-0 align-self-center">購買數量</p>
                   <QuantityControl
+                    waiting={false}
                     quantity={quantity}
                     onIncrease={increaseQuantity}
                     onDecrease={decreaseQuantity}
